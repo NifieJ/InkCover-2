@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>InkCover</title>
+  <style>
+    :root{
+      --bg:#0b1020;
+      --panel:#111a33;
+      --panel-2:#162347;
+      --text:#e9eefc;
+      --muted:#9fb0dc;
+      --accent:#7c9cff;
+      --accent-2:#9e7cff;
+      --border:rgba(255,255,255,.12);
+      --shadow:0 20px 60px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      background:
+        radial-gradient(1200px 700px at 20% 0%, rgba(124,156,255,.24), transparent 55%),
+        radial-gradient(900px 600px at 100% 20%, rgba(158,124,255,.18), transparent 40%),
+        linear-gradient(180deg, #070a13, var(--bg));
+      color:var(--text);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+    .app{
+      width:min(1100px, 100%);
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:24px;
+      align-items:stretch;
+    }
+    .hero, .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius:24px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .hero{
+      padding:34px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      min-height:560px;
+      position:relative;
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 14px;
+      border-radius:999px;
+      background:rgba(124,156,255,.12);
+      color:#cfdafe;
+      border:1px solid rgba(124,156,255,.22);
+      width:fit-content;
+      font-weight:600;
+      letter-spacing:.2px;
+    }
+    .badge-dot{
+      width:10px;height:10px;border-radius:50%;
+      background:linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow:0 0 0 6px rgba(124,156,255,.12);
+    }
+    h1{
+      margin:18px 0 12px;
+      font-size:clamp(2.4rem, 5vw, 4.8rem);
+      line-height:1;
+      letter-spacing:-.05em;
+    }
+    .lead{
+      color:var(--muted);
+      font-size:1.05rem;
+      line-height:1.7;
+      max-width:58ch;
+      margin:0;
+    }
+    .art{
+      margin-top:28px;
+      flex:1;
+      display:grid;
+      place-items:center;
+      border-radius:22px;
+      background:
+        radial-gradient(500px 300px at 30% 20%, rgba(124,156,255,.20), transparent 60%),
+        radial-gradient(420px 280px at 70% 70%, rgba(158,124,255,.16), transparent 60%),
+        linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.08);
+      min-height:340px;
+      padding:20px;
+    }
+    .poster{
+      width:min(100%, 520px);
+      aspect-ratio: 1.2/1;
+      border-radius:28px;
+      background:
+        linear-gradient(135deg, rgba(124,156,255,.95), rgba(158,124,255,.95));
+      box-shadow:0 20px 60px rgba(124,156,255,.25);
+      position:relative;
+      overflow:hidden;
+      isolation:isolate;
+    }
+    .poster:before,
+    .poster:after{
+      content:"";
+      position:absolute;
+      inset:auto;
+      border-radius:999px;
+      background:rgba(255,255,255,.18);
+      filter:blur(2px);
+    }
+    .poster:before{width:180px;height:180px;left:-30px;top:40px}
+    .poster:after{width:260px;height:260px;right:-70px;bottom:-60px}
+    .poster-inner{
+      position:absolute; inset:18px;
+      border-radius:22px;
+      background:
+        linear-gradient(180deg, rgba(9,12,24,.15), rgba(9,12,24,.4)),
+        radial-gradient(120px 120px at 72% 28%, rgba(255,255,255,.12), transparent 70%);
+      border:1px solid rgba(255,255,255,.18);
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      padding:22px;
+    }
+    .poster-title{
+      display:flex;
+      justify-content:space-between;
+      gap:16px;
+      align-items:flex-start;
+      font-weight:700;
+      font-size:1.1rem;
+    }
+    .poster-title small{
+      display:block;
+      font-weight:500;
+      color:rgba(255,255,255,.82);
+      margin-top:4px;
+      letter-spacing:.02em;
+    }
+    .swatches{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .swatches span{
+      width:34px;height:34px;border-radius:12px;
+      border:1px solid rgba(255,255,255,.18);
+      box-shadow:0 10px 20px rgba(0,0,0,.14);
+    }
+    .s1{background:#0c1228}
+    .s2{background:#19285c}
+    .s3{background:#7c9cff}
+    .s4{background:#b09bff}
+    .s5{background:#ffffff}
+    .card{
+      padding:28px;
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+      min-height:560px;
+    }
+    .card h2{
+      margin:0;
+      font-size:1.4rem;
+      letter-spacing:-.03em;
+    }
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    label{
+      font-size:.88rem;
+      color:var(--muted);
+    }
+    input, textarea, button{
+      font:inherit;
+    }
+    input, textarea{
+      width:100%;
+      border:1px solid var(--border);
+      background:rgba(7,10,19,.45);
+      color:var(--text);
+      border-radius:14px;
+      padding:14px 16px;
+      outline:none;
+      transition:border-color .2s ease, transform .2s ease, background .2s ease;
+    }
+    input:focus, textarea:focus{
+      border-color:rgba(124,156,255,.55);
+      background:rgba(7,10,19,.6);
+    }
+    textarea{
+      min-height:150px;
+      resize:vertical;
+      line-height:1.55;
+    }
+    .row{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+    }
+    .buttons{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      margin-top:auto;
+    }
+    .btn{
+      appearance:none;
+      border:none;
+      border-radius:14px;
+      padding:14px 18px;
+      color:white;
+      font-weight:700;
+      cursor:pointer;
+      background:linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow:0 12px 28px rgba(124,156,255,.22);
+      transition:transform .18s ease, filter .18s ease, opacity .18s ease;
+      min-width:160px;
+    }
+    .btn:hover{transform:translateY(-1px);filter:brightness(1.03)}
+    .btn:active{transform:translateY(0)}
+    .btn.secondary{
+      background:rgba(255,255,255,.08);
+      border:1px solid var(--border);
+      box-shadow:none;
+      color:var(--text);
+    }
+    .hint{
+      color:var(--muted);
+      font-size:.92rem;
+      line-height:1.6;
+      margin:0;
+    }
+    .preview-wrap{
+      display:grid;
+      gap:12px;
+    }
+    canvas{
+      width:100%;
+      aspect-ratio: 1.2/1;
+      display:block;
+      background:white;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.1);
+      box-shadow:inset 0 0 0 1px rgba(0,0,0,.02);
+    }
+    .status{
+      min-height:1.2em;
+      color:#cfdafe;
+      font-size:.92rem;
+    }
+    @media (max-width: 920px){
+      .app{grid-template-columns:1fr}
+      .hero,.card{min-height:auto}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <section class="hero">
+      <div>
+        <div class="badge"><span class="badge-dot"></span> InkCover</div>
+        <h1>Cover art, ready to export.</h1>
+        <p class="lead">Create a simple poster-style composition and download it as PNG or SVG. The download flow uses browser-native Blob URLs so clicks reliably trigger actual file saves.</p>
+      </div>
+
+      <div class="art">
+        <div class="poster" id="posterPreview" aria-label="Cover art preview">
+          <div class="poster-inner">
+            <div class="poster-title">
+              <div>
+                InkCover
+                <small id="previewSubtitle">Quiet gradients for bold ideas</small>
+              </div>
+              <div style="text-align:right; color:rgba(255,255,255,.9); font-weight:600;">
+                2026
+              </div>
+            </div>
+            <div class="swatches" aria-hidden="true">
+              <span class="s1"></span>
+              <span class="s2"></span>
+              <span class="s3"></span>
+              <span class="s4"></span>
+              <span class="s5"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Customize and download</h2>
+
+      <div class="field">
+        <label for="titleInput">Title</label>
+        <input id="titleInput" type="text" value="InkCover" maxlength="60">
+      </div>
+
+      <div class="field">
+        <label for="subtitleInput">Subtitle</label>
+        <input id="subtitleInput" type="text" value="Quiet gradients for bold ideas" maxlength="100">
+      </div>
+
+      <div class="field">
+        <label for="notesInput">Notes</label>
+        <textarea id="notesInput">Use the buttons below to export a PNG or SVG version of the current design.</textarea>
+      </div>
+
+      <div class="preview-wrap">
+        <canvas id="artCanvas" width="1200" height="1000" aria-label="Generated artwork"></canvas>
+        <div class="status" id="status"></div>
+      </div>
+
+      <div class="buttons">
+        <button class="btn" id="downloadPngBtn" type="button">Download PNG</button>
+        <button class="btn secondary" id="downloadSvgBtn" type="button">Download SVG</button>
+      </div>
+
+      <p class="hint">Tip: the download buttons are wired to immediate user clicks and use temporary object URLs, which makes them dependable in modern browsers.</p>
+    </section>
+  </div>
+
+  <script>
+    (function() {
+      const canvas = document.getElementById('artCanvas');
+      const ctx = canvas.getContext('2d');
+      const titleInput = document.getElementById('titleInput');
+      const subtitleInput = document.getElementById('subtitleInput');
+      const notesInput = document.getElementById('notesInput');
+      const previewSubtitle = document.getElementById('previewSubtitle');
+      const statusEl = document.getElementById('status');
+      const downloadPngBtn = document.getElementById('downloadPngBtn');
+      const downloadSvgBtn = document.getElementById('downloadSvgBtn');
+
+      function safeFilenamePart(text, fallback) {
+        const value = String(text || '').trim().toLowerCase();
+        const cleaned = value
+          .replace(/['"]/g, '')
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '');
+        return cleaned || fallback;
+      }
+
+      function setStatus(msg) {
+        statusEl.textContent = msg || '';
+      }
+
+      function drawArtwork() {
+        const title = titleInput.value.trim() || 'InkCover';
+        const subtitle = subtitleInput.value.trim() || 'Quiet gradients for bold ideas';
+        previewSubtitle.textContent = subtitle;
+
+        const w = canvas.width;
+        const h = canvas.height;
+
+        const gradient = ctx.createLinearGradient(0, 0, w, h);
+        gradient.addColorStop(0, '#7c9cff');
+        gradient.addColorStop(1, '#9e7cff');
+
+        ctx.clearRect(0, 0, w, h);
+
+        const bg = ctx.createLinearGradient(0, 0, 0, h);
+        bg.addColorStop(0, '#0d1230');
+        bg.addColorStop(1, '#101736');
+        ctx.fillStyle = bg;
+        ctx.fillRect(0, 0, w, h);
+
+        ctx.fillStyle = 'rgba(124,156,255,.20)';
+        ctx.beginPath();
+        ctx.arc(w * .18, h * .18, 170, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = 'rgba(158,124,255,.16)';
+        ctx.beginPath();
+        ctx.arc(w * .82, h * .78, 230, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = gradient;
+        roundRect(ctx, 70, 70, w - 140, h - 140, 42, true, false);
+
+        const innerX = 110;
+        const innerY = 110;
+        const innerW = w - 220;
+        const innerH = h - 220;
+
+        ctx.fillStyle = 'rgba(9, 12, 24, .28)';
+        roundRect(ctx, innerX, innerY, innerW, innerH, 34, true, false);
+
+        ctx.strokeStyle = 'rgba(255,255,255,.18)';
+        ctx.lineWidth = 2;
+        roundRect(ctx, innerX, innerY, innerW, innerH, 34, false, true);
+
+        ctx.save();
+        ctx.fillStyle = 'rgba(255,255,255,.9)';
+        ctx.font = '700 68px system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif';
+        ctx.textBaseline = 'top';
+        wrapText(ctx, title, innerX + 42, innerY + 42, innerW - 84, 76);
+
+        ctx.fillStyle = 'rgba(255,255,255,.84)';
+        ctx.font = '500 32px system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif';
+        wrapText(ctx, subtitle, innerX + 42, innerY + 150, innerW - 84, 42);
+
+        ctx.fillStyle = 'rgba(255,255,255,.72)';
+        ctx.font = '500 22px system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif';
+        wrapText(ctx, notesInput.value.trim(), innerX + 42, innerY + innerH - 190, innerW - 84, 30);
+
+        const swatches = ['#0c1228', '#19285c', '#7c9cff', '#b09bff', '#ffffff'];
+        const baseY = innerY + innerH - 98;
+        const baseX = innerX + 42;
+        swatches.forEach((color, i) => {
+          ctx.fillStyle = color;
+          roundRect(ctx, baseX + i * 54, baseY, 36, 36, 12, true, false);
+          ctx.strokeStyle = 'rgba(255,255,255,.16)';
+          ctx.lineWidth = 1;
+          roundRect(ctx, baseX + i * 54, baseY, 36, 36, 12, false, true);
+        });
+
+        ctx.fillStyle = 'rgba(255,255,255,.85)';
+        ctx.font = '700 26px system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillText('2026', innerX + innerW - 42, innerY + 44);
+        ctx.restore();
+      }
+
+      function roundRect(ctx, x, y, w, h, r, fill, stroke) {
+        if (typeof r === 'number') r = {tl:r, tr:r, br:r, bl:r};
+        ctx.beginPath();
+        ctx.moveTo(x + r.tl, y);
+        ctx.lineTo(x + w - r.tr, y);
+        ctx.quadraticCurveTo(x + w, y, x + w, y + r.tr);
+        ctx.lineTo(x + w, y + h - r.br);
+        ctx.quadraticCurveTo(x + w, y + h, x + w - r.br, y + h);
+        ctx.lineTo(x + r.bl, y + h);
+        ctx.quadraticCurveTo(x, y + h, x, y + h - r.bl);
+        ctx.lineTo(x, y + r.tl);
+        ctx.quadraticCurveTo(x, y, x + r.tl, y);
+        ctx.closePath();
+        if (fill) ctx.fill();
+        if (stroke) ctx.stroke();
+      }
+
+      function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+        const words = String(text || '').split(/\s+/).filter(Boolean);
+        let line = '';
+        let currentY = y;
+        for (let i = 0; i < words.length; i++) {
+          const testLine = line ? line + ' ' + words[i] : words[i];
+          const metrics = ctx.measureText(testLine);
+          if (metrics.width > maxWidth && line) {
+            ctx.fillText(line, x, currentY);
+            line = words[i];
+            currentY += lineHeight;
+          } else {
+            line = testLine;
+          }
+        }
+        if (line) ctx.fillText(line, x, currentY);
+      }
+
+      function canvasToBlobSafe(cnv, type, quality) {
+        return new Promise((resolve, reject) => {
+          if (cnv.toBlob) {
+            cnv.toBlob(blob => {
+              if (blob) resolve(blob);
+              else reject(new Error('Canvas blob generation failed'));
+            }, type, quality);
+            return;
+          }
+          try {
+            const dataUrl = cnv.toDataURL(type, quality);
+            const byteString = atob(dataUrl.split(',')[1]);
+            const mime = dataUrl.split(',')[0].match(/:(.*?);/)[1];
+            const ab = new ArrayBuffer(byteString.length);
+            const ia = new Uint8Array(ab);
+            for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
+            resolve(new Blob([ab], { type: mime }));
+          } catch (err) {
+            reject(err);
+          }
+        });
+      }
+
+      function downloadBlob(blob, filename) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.rel = 'noopener';
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+          URL.revokeObjectURL(url);
+          a.remove();
+        }, 1000);
+      }
+
+      function buildSafeFilename(ext) {
+        const title = safeFilenamePart(titleInput.value, 'inkcover');
+        const subtitle = safeFilenamePart(subtitleInput.value, 'cover');
+        return `inkcover-${title}-${subtitle}.${ext}`;
+      }
+
+      function buildSvgString() {
+        const title = (titleInput.value.trim() || 'InkCover').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const subtitle = (subtitleInput.value.trim() || 'Quiet gradients for bold ideas').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const notes = (notesInput.value.trim() || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+        return `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1000" viewBox="0 0 1200 1000" role="img" aria-label="InkCover artwork">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0d1230"/>
+      <stop offset="100%" stop-color="#101736"/>
+    </linearGradient>
+    <linearGradient id="cover" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#7c9cff"/>
+      <stop offset="100%" stop-color="#9e7cff"/>
+    </linearGradient>
+    <filter id="blur" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="1000" fill="url(#bg)"/>
+  <circle cx="216" cy="180" r="170" fill="rgba(124,156,255,.20)" filter="url(#blur)"/>
+  <circle cx="984" cy="780" r="230" fill="rgba(158,124,255,.16)" filter="url(#blur)"/>
+  <rect x="70" y="70" width="1060" height="860" rx="42" fill="url(#cover)"/>
+  <rect x="110" y="110" width="980" height="780" rx="34" fill="rgba(9,12,24,.28)" stroke="rgba(255,255,255,.18)" stroke-width="2"/>
+  <text x="152" y="194" fill="rgba(255,255,255,.95)" font-family="system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="68" font-weight="700">${title}</text>
+  <text x="152" y="276" fill="rgba(255,255,255,.84)" font-family="system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="32" font-weight="500">${subtitle}</text>
+  <text x="152" y="732" fill="rgba(255,255,255,.72)" font-family="system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="22" font-weight="500">${notes}</text>
+  <g>
+    <rect x="152" y="762" width="36" height="36" rx="12" fill="#0c1228" stroke="rgba(255,255,255,.16)"/>
+    <rect x="206" y="762" width="36" height="36" rx="12" fill="#19285c" stroke="rgba(255,255,255,.16)"/>
+    <rect x="260" y="762" width="36" height="36" rx="12" fill="#7c9cff" stroke="rgba(255,255,255,.16)"/>
+    <rect x="314" y="762" width="36" height="36" rx="12" fill="#b09bff" stroke="rgba(255,255,255,.16)"/>
+    <rect x="368" y="762" width="36" height="36" rx="12" fill="#ffffff" stroke="rgba(255,255,255,.16)"/>
+  </g>
+  <text x="1038" y="194" text-anchor="end" fill="rgba(255,255,255,.85)" font-family="system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="26" font-weight="700">2026</text>
+</svg>`;
+      }
+
+      async function handlePngDownload() {
+        setStatus('Preparing PNG download...');
+        drawArtwork();
+        try {
+          const blob = await canvasToBlobSafe(canvas, 'image/png');
+          downloadBlob(blob, buildSafeFilename('png'));
+          setStatus('PNG download started.');
+        } catch (err) {
+          setStatus('PNG download failed.');
+          console.error(err);
+        }
+      }
+
+      function handleSvgDownload() {
+        setStatus('Preparing SVG download...');
+        const svg = buildSvgString();
+        const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+        downloadBlob(blob, buildSafeFilename('svg'));
+        setStatus('SVG download started.');
+      }
+
+      titleInput.addEventListener('input', drawArtwork);
+      subtitleInput.addEventListener('input', drawArtwork);
+      notesInput.addEventListener('input', drawArtwork);
+
+      downloadPngBtn.addEventListener('click', function() {
+        handlePngDownload();
+      });
+
+      downloadSvgBtn.addEventListener('click', function() {
+        handleSvgDownload();
+      });
+
+      drawArtwork();
+      setStatus('');
+    })();
+  </script>
+</body>
+</html>
